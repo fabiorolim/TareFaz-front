@@ -1,21 +1,57 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { Button, Icon } from 'react-native-elements';
+import List from './src/pages/list';
+import New from './src/pages/new';
+
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  const Stack = createStackNavigator();
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName='List'
+        screenOptions={screenOptions}
+      >
+        <Stack.Screen
+          name='List'
+          component={List}
+          options={({ navigation }) => {
+            return {
+              title: 'Lista de Tarefas',
+              headerRight: () => (
+                <Button
+                  onPress={() => navigation.navigate('New')}
+                  type="clear"
+                  icon={<Icon name="add" size={25} color="white" />}
+                />
+              )
+            }
+          }}
+        />
+        <Stack.Screen
+          name='New'
+          component={New}
+          options={() => {
+            return {
+              title: 'Nova tarefa',
+            }
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+
+}
+const screenOptions = {
+  headerStyle: {
+    backgroundColor: "orange"
   },
-});
+  headerTintColor: "white",
+  headerTitleStyle: {
+    fontWeight: "bold"
+  }
+}
