@@ -1,5 +1,6 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
-import { FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, View, Alert } from 'react-native';
 import { ListItem, Icon, Button } from 'react-native-elements';
 
 import getData, { remove } from '../api/providers';
@@ -9,9 +10,20 @@ export default function List({ navigation }) {
     const [tarefas, setTarefas] = useState({});
     const [refreshing, setRefreshing] = useState(false);
 
-    function del(tarefa) {
-        remove(tarefa)
+
+    function confirmDelete(tarefa) {
+        Alert.alert('Excluir tarefa', 'Deseja excluir a tarefa ' + tarefa.id, [
+            {
+                text: 'Sim', onPress() {
+                    AsyncStorage.getItem('token')
+                        .then(token => remove(token, tarefa))
+                        .then(() => console.warn('Deletou!'))
+                }
+            },
+            { text: "Não" }
+        ])
     }
+
 
     function actions(tarefa) {
         return (
@@ -22,7 +34,7 @@ export default function List({ navigation }) {
                     icon={<Icon name="edit" size={25} color="orange" />}
                 />
                 <Button
-                    onPress={() => del(tarefa)}
+                    onPress={() => confirmDelete(tarefa)}
                     type="clear"
                     icon={<Icon name="delete" size={25} color="red" />}
                 />
@@ -46,12 +58,12 @@ export default function List({ navigation }) {
     }
 
     useEffect(() => {
-        getData().then(setTarefas)
-        // console.warn(tarefas.data)
+        AsyncStorage.getItem('token').then(token => getData(token).then(setTarefas))
+
     }, []);
 
     function onRefresh() {
-        getData().then(setTarefas)
+        AsyncStorage.getItem('token').then(token => getData(token).then(setTarefas))
     }
 
     return (

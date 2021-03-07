@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Text, View, StyleSheet, TextInput } from 'react-native';
@@ -8,13 +9,15 @@ export default function New({ route, navigation }) {
     const [tarefa, setTarefa] = useState(route.params ? route.params : {});
 
     async function salvar() {
-        console.log(tarefa)
         if (tarefa.id) {
-            update(tarefa)
+            AsyncStorage.getItem('token')
+                .then(token => update(token, tarefa))
+                .then(() => navigation.reset({ index: 0, routes: [{ name: 'List' }] }))
         } else {
-            save(tarefa)
+            AsyncStorage.getItem('token')
+                .then(token => save(token, tarefa))
+                .then(() => navigation.reset({ index: 0, routes: [{ name: 'List' }] }))
         }
-        navigation.navigate('List')
     }
 
     return (

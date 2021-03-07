@@ -4,16 +4,24 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Button, Icon } from 'react-native-elements';
 import List from './src/pages/list';
 import New from './src/pages/new';
+import Login from './src/pages/login';
+import Loading from './src/pages/loading';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function App() {
 
   const Stack = createStackNavigator();
 
+  async function logout(navigation) {
+    AsyncStorage.removeItem('token')
+      .then(() => navigation.reset({ index: 0, routes: [{ name: 'Loading' }] }))
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName='List'
+        initialRouteName='Loading'
         screenOptions={screenOptions}
       >
         <Stack.Screen
@@ -28,6 +36,13 @@ export default function App() {
                   type="clear"
                   icon={<Icon name="add" size={25} color="white" />}
                 />
+              ),
+              headerLeft: () => (
+                <Button
+                  onPress={() => logout(navigation)}
+                  type="clear"
+                  icon={<Icon name="logout" size={25} color="white" />}
+                />
               )
             }
           }}
@@ -38,6 +53,24 @@ export default function App() {
           options={() => {
             return {
               title: 'Nova tarefa',
+            }
+          }}
+        />
+        <Stack.Screen
+          name='Login'
+          component={Login}
+          options={() => {
+            return {
+              title: 'Login',
+            }
+          }}
+        />
+        <Stack.Screen
+          name='Loading'
+          component={Loading}
+          options={() => {
+            return {
+              title: 'Loading',
             }
           }}
         />
